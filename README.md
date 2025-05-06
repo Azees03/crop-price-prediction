@@ -2,7 +2,11 @@
 
 A hybrid ARIMA-LSTM model that forecasts agricultural commodity prices with 7-day predictions.
 
-
+##  DemoScreenshots
+See file named : 
+Screenshot 2025-04-28 172538.png
+Screenshot 2025-04-28 172613.png
+Screenshot 2025-05-05 124916.png
 
 ## 📋 Table of Contents
 - [Features](#-features)
