@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coimbatore Forecast & Prices</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8fff5;
+      color: #2c3e50;
+    }
+
+    .weather-section {
+      background-color: #ffffff;
+      padding: 20px;
+      border-bottom: 4px solid #d4edda;
+      text-align: center;
+    }
+
+    .weather-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .today-highlight {
+      background-color: #e6f9e7;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.15);
+    }
+
+    .today-label {
+      background-color: #28a745;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .temperature {
+      font-size: 48px;
+      font-weight: bold;
+      color: #28a745;
+    }
+
+    .details {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 15px;
+    }
+
+    .forecast-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .forecast-day {
+      background-color: white;
+      border-radius: 10px;
+      padding: 15px;
+      min-width: 120px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+      margin: 5px;
+      flex: 1;
+    }
+
+    .forecast-date {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .forecast-temp {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .highlight-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 20px;
+      background-color: #e6f9e7;
+      flex-wrap: wrap;
+    }
+
+    .highlight-text {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .predict-button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+    }
+
+    .fuel-section {
+      background-color: #ffffff;
+      padding: 20px;
+      border-top: 4px solid #d4edda;
+      text-align: center;
+    }
+
+    .fuel-title {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .fuel-data {
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .highlight-section {
+        flex-direction: column;
+        text-align: center;
+      }
+      .forecast-container {
+        justify-content: center;
+      }
+      .forecast-day {
+        min-width: 45%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="weather-section">
+    <div class="weather-header">Weather Forecast for Coimbatore</div>
+    
+    <div class="today-highlight">
+      <div class="today-label">TODAY</div>
+      <img id="weather-icon" src="" alt="Weather Icon" style="width: 80px;">
+      <div class="temperature" id="temperature">--°C</div>
+      <div id="description">Loading...</div>
+      <div class="details">
+        <div>Humidity: <span id="humidity">--%</span></div>
+        <div>Wind: <span id="wind">-- km/h</span></div>
+        <div>Feels Like: <span id="feelslike">--°C</span></div>
+      </div>
+    </div>
+    
+    <div class="forecast-container" id="forecast-container">
+      <!-- Forecast days will be added here by JavaScript -->
+    </div>
+  </div>
+
+  <div class="highlight-section">
+    <div class="highlight-text">
+      Unlock Tomorrow's Market: <br>Get accurate crop price forecasts for smarter decisions.
+    </div>
+    <a href="http://127.0.0.1:5000" class="predict-button">Check Price Forecast</a>
+  </div>
+
+  <div class="fuel-section">
+    <div class="fuel-title">Today's Fuel Prices in Coimbatore</div>
+    <div class="fuel-data">
+      Petrol: ₹<span id="petrol">--</span> / L<br />
+      Diesel: ₹<span id="diesel">--</span> / L
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = '546eb3dbb493fae6ced4560656a9722b';
+    const CITY = 'Coimbatore';
+    const COUNTRY = 'IN';
+
+    async function loadWeather() {
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY},${COUNTRY}&appid=${API_KEY}&units=metric`);
+        const data = await res.json();
+
+        document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
+        document.getElementById('description').textContent = data.weather[0].description;
+        document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+        document.getElementById('wind').textContent = `${Math.round(data.wind.speed)} km/h`;
+        document.getElementById('feelslike').textContent = `${Math.round(data.main.feels_like)}°C`;
+
+        document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+      } catch (error) {
+        console.error("Weather API Error", error);
+      }
+    }
+
+    async function loadForecast() {
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${CITY},${COUNTRY}&appid=${API_KEY}&units=metric`);
+        const data = await res.json();
+        
+        const forecastContainer = document.getElementById('forecast-container');
+        forecastContainer.innerHTML = ''; // Clear any existing content
+        
+        // Process forecast data to get one forecast per day
+        const dailyForecasts = {};
+        const today = new Date().setHours(0, 0, 0, 0);
+        
+        // Group forecasts by day and only include future days
+        data.list.forEach(forecast => {
+          const forecastDate = new Date(forecast.dt * 1000);
+          const dateString = forecastDate.toDateString();
+          const forecastDay = forecastDate.setHours(0, 0, 0, 0);
+          
+          // Skip today as we already have current weather
+          if (forecastDay > today) {
+            if (!dailyForecasts[dateString] || 
+                (dailyForecasts[dateString] && 
+                 Math.abs(forecastDate.getHours() - 12) < 
+                 Math.abs(new Date(dailyForecasts[dateString].dt * 1000).getHours() - 12))) {
+              // Prefer forecasts closer to noon for representing the day
+              dailyForecasts[dateString] = forecast;
+            }
+          }
+        });
+        
+        // Take only the next 4 days
+        const nextDays = Object.values(dailyForecasts).slice(0, 4);
+        
+        // Create forecast elements
+        nextDays.forEach(forecast => {
+          const date = new Date(forecast.dt * 1000);
+          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const dayName = dayNames[date.getDay()];
+          const day = date.getDate();
+          const month = date.toLocaleString('default', { month: 'short' });
+          
+          const forecastDay = document.createElement('div');
+          forecastDay.className = 'forecast-day';
+          forecastDay.innerHTML = `
+            <div class="forecast-date">${dayName}, ${day} ${month}</div>
+            <img src="https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png" alt="${forecast.weather[0].description}" style="width: 50px;">
+            <div class="forecast-temp">${Math.round(forecast.main.temp)}°C</div>
+            <div>${forecast.weather[0].description}</div>
+            <div>Humidity: ${forecast.main.humidity}%</div>
+          `;
+          
+          forecastContainer.appendChild(forecastDay);
+        });
+      } catch (error) {
+        console.error("Forecast API Error", error);
+        document.getElementById('forecast-container').innerHTML = '<p>Unable to load forecast data</p>';
+      }
+    }
+
+    async function loadFuelPrices() {
+      // Simulated prices - replace with real API call or backend endpoint if needed
+      const petrolPrice = 101.38;
+      const dieselPrice = 92.83;
+
+      document.getElementById('petrol').textContent = petrolPrice.toFixed(2);
+      document.getElementById('diesel').textContent = dieselPrice.toFixed(2);
+    }
+
+    loadWeather();
+    loadForecast();
+    loadFuelPrices();
+  </script>
+</body>
+</html>
